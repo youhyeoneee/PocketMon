@@ -13,7 +13,9 @@ public:
 	void Run();
 	void Start(); //초기화면
 	void Menu(string ID, int code); //메인메뉴
-	void Battle(int code);
+	//void Battle(int code);
+	void Battle(PocketMon& Mon, Trainer&trainer);
 	int Random();
+	void Shop(Trainer &ID);
 };
 

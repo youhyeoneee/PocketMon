@@ -18,20 +18,27 @@ public:
 	int Exp = 0;
 	int Price;
 	int Code = 0;
+	bool isDaepyo = 0;
 public:
-	void LevelUp() //레벨업 함수
+	void LevelUp(int Level, int Exp, int FullHp) //레벨업 함수
 	{
-		int Level, Exp;
 		if (Exp == 100) //레벨 1 올리고 경험치 초기화 
-			Level++; Exp = 0; Hp += 5;
+			Level++; Exp = 0; FullHp += 5;
 	};
 	void Hit(string Name, int force)
 	{
 		cout << endl;
-		cout << Name << "가 피해를 입었습니다!" << endl;
+		cout << Name << "(이)가 피해를 입었습니다!" << endl;
 		Hp -= force;
 		if (Hp < 0)
 			Hp = 0;
+	};
+	void getinfo(int code)
+	{
+		cout << "<" << Name << ">" << endl;
+		cout << "LV : " << Level << endl;
+		cout << "EXP : " << Exp << "% [ " << Exp << " / " << FullExp << " ]" << endl;
+
 	};
 
 
