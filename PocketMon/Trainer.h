@@ -11,6 +11,7 @@ public:
 
 public:
 	Trainer();
+	Trainer(string ID);
 	~Trainer();
 };
 
