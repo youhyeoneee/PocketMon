@@ -45,7 +45,6 @@ void App::Start()
 		else if (ipt == 2)
 		{
 			exit(101);
-			break;
 		}
 		else
 		{
