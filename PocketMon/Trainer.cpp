@@ -109,6 +109,11 @@ void Trainer::Useball(Trainer & trainer, PocketMon & Enemy)
 	{
 		trainer.ball--;
 		cout << Enemy.Name << "를 잡는데 성공했습니다!" << endl;
+		int idx = trainer.monCnt;
+		trainer.Monlist[idx] = &Enemy;
+		trainer.monCnt++;
+		for (int i = 0; i < trainer.monCnt; i++)
+			cout << i + 1 << ":" << trainer.Monlist[i]->Name << endl;
 	}
 	else
 		cout << "몬스터볼이 모자릅니다 ! " << endl;

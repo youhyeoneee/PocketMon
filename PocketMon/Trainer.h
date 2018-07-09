@@ -10,11 +10,13 @@ public:
 	int money = 1000;
 	int ball = 0;
 	int potion = 0;
-	char Monlist[6] = { ' ', ' ', ' ', ' ', ' ', ' ' };
+	PocketMon* Monlist[6];
+	int monCnt = 0;
 public:
 	Trainer();
 	Trainer(string ID);
 	~Trainer();
+	
 public:
 	void Buy(int i);
 	void Sell(int i);

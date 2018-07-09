@@ -33,7 +33,7 @@ void App::Start()
 		{
 			system("cls");
 			cout << "ID 입력 ::"; cin >> ID;
-			Trainer trainer(ID); //입력받은 ID가진 트레이너 생성
+			trainer = Trainer(ID); //입력받은 ID가진 트레이너 생성
 			while (true)
 			{
 				system("cls");
@@ -50,16 +50,26 @@ void App::Start()
 					cout << "파이리 선택!!!!!" << endl;
 					Code = 11;
 					PocketMon Piri(11);
+					//Skill Piri(Piri);
 					system("pause");
+					system("cls");
+					Menu(Piri, trainer);
+					//trainer.SetMon(&Piri);
 					break;
+					
 				}
 				else if (mon == 2)
 				{
 					cout << "꼬부기 선택!!!!!" << endl;
 					Code = 21;
 					PocketMon Gbg(21); 
+					//Skill Gbg(Gbg);
 					system("pause");
+					system("cls");
+					Menu(Gbg, trainer);
+					//trainer.SetMon(&Gbg);
 					break;
+					
 				}
 				else if (mon == 3)
 				{
@@ -67,7 +77,11 @@ void App::Start()
 					Code = 31;
 					PocketMon Ish(31); 
 					system("pause");
+					system("cls");
+					Menu(Ish, trainer);
+					//trainer.SetMon(&Ish);
 					break;
+					
 				}
 				else
 				{
@@ -75,10 +89,9 @@ void App::Start()
 					system("pause");
 
 				}
-			
+				break;
 			} 
-			system("cls");
-		Menu(ID, Code);
+			
 		}
 		else if (ipt == 2)
 		{
@@ -90,25 +103,42 @@ void App::Start()
 			system("pause");
 			system("cls");
 		}
-
 	}
 	
 }
 
-void App::Menu(string ID, int code)
+void App::Menu(PocketMon& Mon, Trainer&trainer)
 {
-	Trainer trainer(ID);
-	PocketMon Mon(code);
+
 	Skill MonSkill(Mon.Code);
-	if (Mon.Exp == 100)
-		Mon.LevelUp(Mon.Level, Mon.Exp, Mon.FullHP);
+	Skill2 MonSkill2(Mon.Code); //새 스킬 생성
+
+	int idx = trainer.monCnt;
+	trainer.Monlist[idx] = &Mon;
+	trainer.monCnt++;
+
 	while (true)
 	{
 		system("cls");
+		if (Mon.Exp >= 100) // 경험치 100 도달시 
+		{	
+			cout << "레벨업!" << endl;			
+			system("pause");
+			system("cls");
+			LevelUp(Mon); //레벨 1 올리고 경험치 초기화, hp 올리기
+			MonSkill.Force++; //스킬 위력 올리기
+			if (Mon.Level % 3 == 0 )//3,6
+		{
+			system("cls");
+			cout << Mon.Name << "(이)가 " << Mon.Name2 << "로 진화하였습니다!" << endl;
+			Evolution(Mon);
+		}
+		}
+		
 		int ipt;
 
 		cout << "--------------------------------------" << endl;
-		cout << "유저 이름 : " << ID << "  대표 포켓몬 : " << Mon.Name << endl;
+		cout << "유저 이름 : " << trainer.ID << "  대표 포켓몬 : " << Mon.Name << endl;
 		cout << "LV : " << Mon.Level << "  EXP : " << Mon.Exp << "% [ " << Mon.Exp << " / "<<Mon.FullExp << " ]" << endl;
 		cout << "--------------------------------------" << endl;
 		cout << "--------------------------------------" << endl;
@@ -121,8 +151,9 @@ void App::Menu(string ID, int code)
 		cout << "입력 ::"; cin >> ipt;
 		if (ipt == 1)
 		{
-			Battle(Mon, trainer);
+			Battle(Mon, trainer, MonSkill, MonSkill2);
 		}
+		
 		else if (ipt == 2)//User 정보 보기
  		{
 			while (true)
@@ -137,54 +168,64 @@ void App::Menu(string ID, int code)
 					cout << "입력 ::"; cin >> info;
 					if (info == 1) //포켓몬 목록 보기
 					{
-						system("cls");
-						cout << "--------------------------------------" << endl;
-						cout << "          < 포 켓 몬 목 록 >          " << endl;
-						cout << "		0. 종료		   " << endl;
-						cout << "		1. " << Mon.Name << endl;
-						cout << "--------------------------------------" << endl;
-						cout << "		번호 입력 :: "; cin >> po;
-						if (po == 0)
-							break;
-						else
-						{
-							int i;
-							while (true)
+						while(true)
+						{	
+							system("cls");
+							cout << "--------------------------------------" << endl;
+							cout << "          < 포 켓 몬 목 록 >          " << endl;
+							cout << "		0. 종료		   " << endl;
+							ShowMon(trainer);
+							cout << "--------------------------------------" << endl;
+							cout << "		번호 입력 :: "; cin >> po;
+							if (po == 0)
+								break;
+							else if (po == trainer.monCnt)
 							{
-								system("cls");
-								cout << "--------------------------------------" << endl;
-								Mon.getinfo(Mon.Code);
-								cout << endl;
-								MonSkill.getSkillinfo(Mon.Code);
-								cout << "--------------------------------------" << endl;
-
-								cout << endl << "대표 포켓몬으로 지정하시겠습니까?" << endl;
-								cout << "1. 예" << endl;
-								cout << "2. 아니오" << endl;
-								cout << "--------------------------------------" << endl;
-								cout << "입력 ::"; cin >> i;
-								if (i == 1)
+								int i;
+								while (true)
 								{
-									Mon.isDaepyo = 1;
-									system("pause");
-									break;
-								}
-								else if (i == 2)
-								{
-									Mon.isDaepyo = 0;
-									system("pause");
-									break;
-								}
-								else
-								{
-									cout << "잘못된 입력입니다. 다시 입력해주세요." << endl;
-									system("pause");
 									system("cls");
+									cout << "--------------------------------------" << endl;
+									getMoninfo(Mon);
+									cout << endl;
+									MonSkill.getSkillinfo(Mon.Code);
+									if (Mon.Evolution == 2)
+										MonSkill2.getSkill2info(Mon.Code);
+									cout << "--------------------------------------" << endl;
+
+									cout << endl << "대표 포켓몬으로 지정하시겠습니까?" << endl;
+									cout << "1. 예" << endl;
+									cout << "2. 아니오" << endl;
+									cout << "--------------------------------------" << endl;
+									cout << "입력 ::"; cin >> i;
+									if (i == 1)
+									{
+										Mon.isDaepyo = 1;
+										system("pause");
+										break;
+									}
+									else if (i == 2)
+									{
+										Mon.isDaepyo = 0;
+										system("pause");
+										break;
+									}
+									else
+									{
+										cout << "잘못된 입력입니다. 다시 입력해주세요." << endl;
+										system("pause");
+										system("cls");
+									}
 								}
+								break;
+							}
+							else
+							{
+								cout << "잘못된 입력입니다. 다시 입력해주세요." << endl;
+								system("pause");
+								system("cls");
 							}
 						}
-
-
 					}
 					else if (info == 2) //Item 목록 보기
 					{
@@ -264,10 +305,10 @@ void App::Menu(string ID, int code)
 }
 
 //void App::Battle(int code)
-void App::Battle(PocketMon& Mon, Trainer&trainer)
+void App::Battle(PocketMon& Mon, Trainer&trainer, Skill &MonSkill, Skill2 &MonSkill2)
 {
 	int battle;
-	Skill MonSkill(Mon.Code);
+
 	while (true)
 	{
 		if (Mon.Hp <= 0)
@@ -275,8 +316,11 @@ void App::Battle(PocketMon& Mon, Trainer&trainer)
 			break;
 
 		}
-		PocketMon Enemy(Random()); //난수생성해서 하기
-		Skill EnemySkill(Random());
+		int i = Random();
+		PocketMon Enemy(i); //난수생성해서 하기
+		Skill EnemySkill(i);
+		Skill2 EnemySkill2(i);
+
 		system("cls");
 		cout << "--------------------------------------" << endl;
 		cout << " 이름 : " << Enemy.Name << "  타입 : " << Enemy.Type << endl;
@@ -294,90 +338,108 @@ void App::Battle(PocketMon& Mon, Trainer&trainer)
 		cout << "입력 ::"; cin >> battle;
 		if (battle == 1)
 		{
-			while (true)
-			{
-				if (Mon.Hp > 0 && Enemy.Hp >0)
-				{ 
-					while (true)
+			if (Mon.Hp > 0 && Enemy.Hp >0)
+			{ 
+				while (true)
+				{
+					int ipt;
+
+					system("cls");
+					cout << "--------------------------------------" << endl;
+					cout << " 이름 : " << Enemy.Name << "  타입 : " << Enemy.Type << endl;
+					cout << " LV : " << Enemy.Level << "  HP : " << Enemy.Hp << " / " << Enemy.FullHP << endl;
+					cout << "--------------------------------------" << endl;
+					cout << "--------------------------------------" << endl;
+					cout << " 이름 : " << Mon.Name << "  타입 : " << Mon.Type << endl;
+					cout << " LV : " << Mon.Level << "  HP : " << Mon.Hp << " / " << Mon.FullHP << endl;
+					cout << "--------------------------------------" << endl;
+					cout << "--------------------------------------" << endl;
+					cout << "0. 뒤로가기" << endl;
+					cout << "1. " << MonSkill.skillName << endl;
+					if (Mon.Evolution==2)
+						cout << "2. " << MonSkill2.skillName << endl;
+					cout << "--------------------------------------" << endl;
+					cout << "입력 ::"; cin >> ipt;
+						
+						
+					if (ipt == 1)
 					{
-						int ipt;
-
-						system("cls");
-						cout << "--------------------------------------" << endl;
-						cout << " 이름 : " << Enemy.Name << "  타입 : " << Enemy.Type << endl;
-						cout << " LV : " << Enemy.Level << "  HP : " << Enemy.Hp << " / " << Enemy.FullHP << endl;
-						cout << "--------------------------------------" << endl;
-						cout << "--------------------------------------" << endl;
-						cout << " 이름 : " << Mon.Name << "  타입 : " << Mon.Type << endl;
-						cout << " LV : " << Mon.Level << "  HP : " << Mon.Hp << " / " << Mon.FullHP << endl;
-						cout << "--------------------------------------" << endl;
-						cout << "--------------------------------------" << endl;
-						cout << "1. " << MonSkill.skillName << endl;
-						cout << "2. 뒤로가기" << endl;
-						cout << "--------------------------------------" << endl;
-						cout << "입력 ::"; cin >> ipt;
-
-						if (ipt == 1)
+						cout << Mon.Name << "(이)가";
+						MonSkill.Attack(Mon.Code);
+						Plusdamage(MonSkill, Enemy);
+						Enemy.Hit(Enemy.Name, MonSkill.Force);
+						if (Enemy.Hp <= 0)
 						{
-							cout << Mon.Name << "이(가)";
-							MonSkill.Attack(Mon.Code);
-							Enemy.Hit(Enemy.Name, MonSkill.Force);
-							if (Enemy.Hp <= 0)
-							{
-								cout << endl;
-								cout << "승리하였습니다!" << endl;
-								cout << 50 * Enemy.Level << "의 경험치 획득" << endl;
-								cout << 100 * Enemy.Level << "원 획득" << endl;
-								Mon.Exp += Enemy.Level * 50;
-								trainer.money += 100 * Enemy.Level;
-								system("pause");
-								break;
-							}
 							cout << endl;
-							cout << Enemy.Name << "이(가)";
-							EnemySkill.Attack(Enemy.Code);
-							Mon.Hit(Mon.Name, EnemySkill.Force);
-							if (Mon.Hp <= 0)
-							{
-								cout << endl;
-								cout << "패배하였습니다!" << endl;
-								cout << Mon.Name << "(이)가 기절했습니다!!" << endl;
-								system("pause");
-								break;
-								
-							}
+							cout << "승리하였습니다!" << endl;
+							cout << 50 * Enemy.Level << "의 경험치 획득" << endl;
+							cout << 100 * Enemy.Level << "원 획득" << endl;
+							Mon.Exp += Enemy.Level * 50;
+							trainer.money += 100 * Enemy.Level;
 							system("pause");
-						}
-						else if (ipt == 2)
 							break;
-						else
-						{
-							cout << "잘못된 입력입니다. 다시 입력해주세요." << endl;
-							system("pause");
-							system("cls");
 						}
+						cout << endl;
+						cout << Enemy.Name << "이(가)";
+						EnemySkill.Attack(Enemy.Code);
+						Plusdamage(EnemySkill, Mon);
+						Mon.Hit(Mon.Name, EnemySkill.Force);
+						if (Mon.Hp <= 0)
+						{
+							cout << endl;
+							cout << "패배하였습니다!" << endl;
+							cout << Mon.Name << "(이)가 기절했습니다!!" << endl;
+							system("pause");
+							break;
+
+						}
+						system("pause");
 					}
+					else if (ipt == 2)
+					{
+						cout << Mon.Name << "이(가)";
+						MonSkill2.Attack(Mon.Code);
+						Plusdamage(MonSkill2, Enemy);
+						Enemy.Hit(Enemy.Name, MonSkill2.Force);
+						if (Enemy.Hp <= 0)
+						{
+							cout << endl;
+							cout << "승리하였습니다!" << endl;
+							cout << 50 * Enemy.Level << "의 경험치 획득" << endl;
+							cout << 100 * Enemy.Level << "원 획득" << endl;
+							Mon.Exp += Enemy.Level * 50;
+							trainer.money += 100 * Enemy.Level;
+							system("pause");
+							break;
+						}
+						cout << endl;
+						cout << Enemy.Name << "이(가)";
+						EnemySkill2.Attack(Enemy.Code);
+						Plusdamage(EnemySkill2, Mon);
+						Mon.Hit(Mon.Name, EnemySkill2.Force);
+						if (Mon.Hp <= 0)
+						{
+							cout << endl;
+							cout << "패배하였습니다!" << endl;
+							cout << Mon.Name << "(이)가 기절했습니다!!" << endl;
+							system("pause");
+							break;
+
+						}
+						system("pause");
+					}
+					else if (ipt == 0)
+						break;
+					else
+					{
+						cout << "잘못된 입력입니다. 다시 입력해주세요." << endl;
+						system("pause");
+						system("cls");
+					}
+
 				}
-
-				/*else if (Mon.Hp <= 0 && Enemy.Hp >0)
-				{
-
-					//cout << endl;
-					//cout << Mon.Name << "(이)가 기절했습니다!!" << endl;
-					//system("pause");
-					//break;
-
-				}
-				else if (Enemy.Hp <= 0 && Mon.Hp >0)
-				{
-					//cout << 50 * Enemy.Level << "의 경험치 획득" << endl;
-					//cout << 100 * Enemy.Level << "원 획득" << endl;
-					//
-					//break;
-				}*/
-				break;
+					
 			} 
-			
 
 		}
 		else if (battle == 2) // 가방
@@ -421,7 +483,8 @@ void App::Battle(PocketMon& Mon, Trainer&trainer)
 					}
 					else if (ipt1 == 2)
 					{
-						break;
+						trainer.Useball(trainer, Enemy);
+						
 					}
 				}
 

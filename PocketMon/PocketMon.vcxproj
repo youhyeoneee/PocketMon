@@ -147,12 +147,14 @@
     <ClCompile Include="PocketMon.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Skill.cpp" />
+    <ClCompile Include="Skill2.cpp" />
     <ClCompile Include="Trainer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="PocketMon.h" />
     <ClInclude Include="Skill.h" />
+    <ClInclude Include="Skill2.h" />
     <ClInclude Include="Trainer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
